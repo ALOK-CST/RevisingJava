@@ -4,9 +4,9 @@ on:
   workflow_dispatch: # Allows manual triggering
     inputs:
       filename:
-        description: 'Name of the Java file to compile and run'
+        description: 'Path to the Java file to compile and run (e.g., Basics/HelloWorld.java)'
         required: true
-        default: 'Main.java'
+        default: 'Basics/HelloWorld.java'
 
 jobs:
   run-java:
@@ -20,9 +20,11 @@ jobs:
         run: sudo apt-get install -y default-jdk
 
       - name: Compile Java Code
-        run: javac ${{ github.event.inputs.filename }}
+        run: |
+          cd $(dirname ${{ github.event.inputs.filename }}) # Navigate to the directory
+          javac $(basename ${{ github.event.inputs.filename }}) # Compile the file
 
       - name: Run Java Program
-        run: java ${{ github.event.inputs.filename }} # Strip .java manually
-        env:
-          filename: ${{ github.event.inputs.filename }}
+        run: |
+          cd $(dirname ${{ github.event.inputs.filename }}) # Navigate to the directory
+          java $(basename ${{ github.event.inputs.filename }} .java) # Run the class file
